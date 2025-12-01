@@ -1,20 +1,46 @@
 import streamlit as st
 import joblib
+import re
 
+# -------------------------
 # Load model + vectorizer
-model = joblib.load("sentiment_model.joblib")
+# -------------------------
 tfidf = joblib.load("tfidf_vectorizer.joblib")
+model = joblib.load("sentiment_model.joblib")
 
-st.title("Marketing Tweet Sentiment Analyzer")
-st.write("This app predicts if a marketing-related tweet is positive or negative.")
+# -------------------------
+# Text cleaning function
+# -------------------------
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"http\S+", "", text)
+    text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
-user_text = st.text_area("Enter a tweet or message:")
+# -------------------------
+# Title / UI
+# -------------------------
+st.title("Marketing Tweet Sentiment + Persona Classifier 🔍📊")
+st.write("Analyze a marketing-related tweet and classify its sentiment as **Negative**, **Neutral**, or **Positive**.")
+
+user_input = st.text_area("Enter a tweet or message:", height=150)
 
 if st.button("Analyze"):
-    if user_text.strip() == "":
-        st.write("Please type something first.")
+    if user_input.strip() == "":
+        st.warning("Please enter text to analyze.")
     else:
-        vect = tfidf.transform([user_text])
-        pred = model.predict(vect)[0]
-        sentiment = "Positive 😊" if pred == 1 else "Negative 😕"
-        st.subheader(f"Sentiment: {sentiment}")
+        cleaned = clean_text(user_input)
+        vectorized = tfidf.transform([cleaned])
+        pred = model.predict(vectorized)[0]
+
+        label_map = {
+            0: ("Negative 😞", "This message reflects customer dissatisfaction."),
+            1: ("Positive 😄", "This message reflects customer satisfaction."),
+            2: ("Neutral 😐", "This message is informational or emotion-neutral.")
+        }
+
+        sentiment_label, explanation = label_map[pred]
+
+        st.subheader(f"Sentiment: **{sentiment_label}**")
+        st.write(explanation)
