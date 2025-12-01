@@ -19,10 +19,10 @@ def clean_text(text):
     return text
 
 # -------------------------
-# Title / UI
+# UI
 # -------------------------
 st.title("Marketing Tweet Sentiment + Persona Classifier 🔍📊")
-st.write("Analyze a marketing-related tweet and classify its sentiment as **Negative**, **Neutral**, or **Positive**.")
+st.write("Analyze a marketing-related tweet and classify its sentiment as **Negative** or **Positive**.")
 
 user_input = st.text_area("Enter a tweet or message:", height=150)
 
@@ -32,17 +32,18 @@ if st.button("Analyze"):
     else:
         cleaned = clean_text(user_input)
         vectorized = tfidf.transform([cleaned])
-        pred = model.predict(vectorized)[0]
+        pred = int(model.predict(vectorized)[0])
 
+        # Only 0 and 4 exist in Sentiment140
         label_map = {
-    0: ("Negative 😞", "This message reflects customer dissatisfaction."),
-    4: ("Positive 😄", "This message reflects customer satisfaction.")
-}
+            0: ("Negative 😞", "This message reflects customer dissatisfaction."),
+            4: ("Positive 😄", "This message reflects customer satisfaction.")
+        }
 
-sentiment_label, explanation = label_map.get(
-    int(pred),
-    ("Unknown 🤔", "The model predicted a label I didn't expect.")
-)
+        sentiment_label, explanation = label_map.get(
+            pred,
+            ("Unknown 🤔", "The model predicted an unexpected label.")
+        )
 
         st.subheader(f"Sentiment: **{sentiment_label}**")
         st.write(explanation)
