@@ -35,10 +35,10 @@ if st.button("Analyze"):
         pred = model.predict(vectorized)[0]
 
         label_map = {
-            0: ("Negative 😞", "This message reflects customer dissatisfaction."),
-            1: ("Positive 😄", "This message reflects customer satisfaction."),
-            2: ("Neutral 😐", "This message is informational or emotion-neutral.")
-        }
+    0: ("Negative 😞", "This message reflects customer dissatisfaction."),
+    1: ("Positive 😄", "This message reflects customer satisfaction.")
+}
+
 
         sentiment_label, explanation = label_map[pred]
 
