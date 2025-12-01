@@ -36,11 +36,13 @@ if st.button("Analyze"):
 
         label_map = {
     0: ("Negative 😞", "This message reflects customer dissatisfaction."),
-    1: ("Positive 😄", "This message reflects customer satisfaction.")
+    4: ("Positive 😄", "This message reflects customer satisfaction.")
 }
 
-
-        sentiment_label, explanation = label_map[pred]
+sentiment_label, explanation = label_map.get(
+    int(pred),
+    ("Unknown 🤔", "The model predicted a label I didn't expect.")
+)
 
         st.subheader(f"Sentiment: **{sentiment_label}**")
         st.write(explanation)
